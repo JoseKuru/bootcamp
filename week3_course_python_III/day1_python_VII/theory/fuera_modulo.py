@@ -1,0 +1,2 @@
+def fuera():
+    print('Hola')
