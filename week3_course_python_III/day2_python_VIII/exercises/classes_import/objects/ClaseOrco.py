@@ -12,6 +12,7 @@ class Orco:
 
     def atacar(self, Humano):
         Humano.salud -= self.ataque - Humano.armadura
+        print(f'La salud del Humano es {Humano.salud}')
     
     def no_vivo(self):
         if self.salud <= 0:
