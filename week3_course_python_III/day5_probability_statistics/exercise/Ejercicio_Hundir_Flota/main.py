@@ -1,6 +1,6 @@
 from Tablero import Tablero
 from Barcos import Barcos
-import os
+import os, json
 
 
 def preguntar(Tablero, diccionario_posiciones):
@@ -38,14 +38,14 @@ def empiece_partida():
                     y_input = int((input_colocacion.split('h'))[0])
                     x_input = int(((input_colocacion.split('h'))[1].split(':'))[0])
                     barco.colocar_barco(y_input, x_input, mesa_de_juego, lista_posiciones)
-                    lista_posiciones.append((y_input, x_input)) # Añadir a la lista para chequear que dos barcos no choquen
+                    lista_posiciones.append(barco.posicion) # Añadir a la lista para chequear que dos barcos no choquen
                     break
                 else:
                     barco.establecer_orientacion('v')
                     y_input = int((input_colocacion.split('v'))[0])
                     x_input = int(((input_colocacion.split('v'))[1].split(':'))[0]) #Muy lioso?, Solo me importa la primera coordenada de columna_inicio : columna_final
                     barco.colocar_barco(y_input, x_input, mesa_de_juego, lista_posiciones)
-                    lista_posiciones.append((y_input, x_input))
+                    lista_posiciones.append(barco.posicion)
                     break
             except Exception as err:
                 print(err)
@@ -65,10 +65,12 @@ segundo_barco_4_1 = Barcos('Segundo barco 4x1', 4)
 primer_barco_5_1 = Barcos('Primer barco 5x1', 5)
 lista_barcos = [primer_barco_2_1, segundo_barco_2_1, tercer_barco_2_1, cuarto_barco_2_1, primer_barco_3_1, segundo_barco_3_1, tercer_barco_3_1, primer_barco_4_1, segundo_barco_4_1, primer_barco_5_1]
 empiece_partida()
-dict_posiciones = {barco : barco.posicion for barco in lista_barcos}
-mesa_de_juego.mostrar_pantalla()
-count = 0
-while count < 5:
-    preguntar(mesa_de_juego, dict_posiciones)
-    count += 1
+dict_posiciones = {barco.nombre : barco.posicion for barco in lista_barcos}
+with open('posiciones.json', 'w+') as pos:
+    json.dump(dict_posiciones, pos, indent=4)
+#mesa_de_juego.mostrar_pantalla()
+#count = 0
+#while count < 5:
+#    preguntar(mesa_de_juego, dict_posiciones)
+#    count += 1
 

@@ -1,5 +1,3 @@
-import numpy as np
-
 class Tablero:
 
     def __init__(self, altura, anchura):
