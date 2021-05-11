@@ -1,58 +1,104 @@
 from Tablero import Tablero
 from Barcos import Barcos
-import os, json
+import numpy as np
+import os, json, random
+
+def quien_empieza():
+    return random.randint(1, 6), random.randint(1, 6)
 
 
-def preguntar(Tablero, diccionario_posiciones):
+def ataque(Tablero, diccionario_posiciones):
+    print('Defiende')
     y = int(input('Selecciona la posicion y: '))
     x = int(input('Selecciona la posicion x: '))
     prediccion = (y, x)
     encontrado = False
-    for k, v in diccionario_posiciones.items():
-        if prediccion in v:
-            Tablero.tabla[y][x] = 'x'
-            k.vida -= 1
+    for Barco in lista_barcos:
+        if prediccion in Barco.posicion:
+            Tablero.tabla[y][x] = 'x' # Cuidado
+            Barco.posicion.remove(prediccion)
             encontrado = True
-            os.system('clear')
-            if k.vida == 0:
-                print('BARCO DESTRUIDOOOO')
+            #os.system('clear')
+            if not Barco.posicion:
+                Barco.muerte = True
+                print('BARCO DESTRUIDO :(')
+                break
             else:
                 print('Barco tocado!')
-            break
+                break
+    
     if not encontrado:
         Tablero.tabla[y][x] = 'o'
-        os.system('clear')
+        #os.system('clear')
         print('Agua')
-    mesa_de_juego.mostrar_pantalla()
 
+    print(np.concatenate((mesa_de_juego.tabla, separador, tablero_diana.tabla), axis=1))
+
+    
+
+def defensa(tablero_diana, lista_barcos_enemigos):
+    print('Ataca')
+    y = int(input('Selecciona la posicion y: '))
+    x = int(input('Selecciona la posicion x: '))
+    prediccion = [y, x]
+    encontrado = False
+    for barco in lista_barcos_enemigos:
+        if prediccion in barco.posicion:
+            tablero_diana.tabla[y][x] = 'x' # Cuidado
+            barco.posicion.remove(prediccion)
+            encontrado = True
+            #os.system('clear')
+            if not barco.posicion:
+                barco.muerte = True
+                print('BARCO DESTRUIDO :)')
+                break
+            else:
+                print('Barco tocado')
+                break
+
+    if not encontrado:
+        tablero_diana.tabla[y][x] = 'o'
+        #os.system('clear')
+        print('Agua')
+
+    print(np.concatenate((mesa_de_juego.tabla, separador, tablero_diana.tabla), axis=1))
+ 
 def empiece_partida():
     lista_posiciones = []
     for barco in lista_barcos:
         while True:
             try:
                 #os.system('clear')
-                mesa_de_juego.mostrar_pantalla()
+                
                 input_colocacion = input(f'Introduce la posicion del {barco.nombre}: ')
                 if 'h' in input_colocacion:
-                    barco.establecer_orientacion('h')
+                    orientacion = 'Horizontal'
+                    #barco.establecer_orientacion('h')
                     y_input = int((input_colocacion.split('h'))[0])
                     x_input = int(((input_colocacion.split('h'))[1].split(':'))[0])
-                    barco.colocar_barco(y_input, x_input, mesa_de_juego, lista_posiciones)
-                    lista_posiciones.append(barco.posicion) # Añadir a la lista para chequear que dos barcos no choquen
+                    barco.colocar_barco(y_input + 1, x_input + 1, mesa_de_juego, orientacion)
+                    # Añadir a la lista para chequear que dos barcos no choquen
                     break
                 else:
-                    barco.establecer_orientacion('v')
+                    orientacion = 'Vertical'
+                    #barco.establecer_orientacion('v')
                     y_input = int((input_colocacion.split('v'))[0])
                     x_input = int(((input_colocacion.split('v'))[1].split(':'))[0]) #Muy lioso?, Solo me importa la primera coordenada de columna_inicio : columna_final
-                    barco.colocar_barco(y_input, x_input, mesa_de_juego, lista_posiciones)
-                    lista_posiciones.append(barco.posicion)
+                    barco.colocar_barco(y_input + 1, x_input + 1, mesa_de_juego, orientacion)
+                    
                     break
             except Exception as err:
                 print(err)
-        
-        print(barco.posicion) # --NO
 
-mesa_de_juego = Tablero(10, 10)
+            print(mesa_de_juego.tabla) # --NO
+
+np.set_printoptions(linewidth=100)
+
+mesa_de_juego = Tablero()
+tablero_enemigo = Tablero()
+tablero_diana = Tablero()
+#print(mesa_de_juego.tabla, tablero_enemigo.tabla, sep='\t') Ver las dos matrices a la vez
+separador = np.full((11, 1), '|')
 primer_barco_2_1 = Barcos('Primer barco 2x1', 2)
 segundo_barco_2_1 = Barcos('Segundo barco 2x1', 2)
 tercer_barco_2_1 = Barcos('Tercer barco 2x1', 2)
@@ -64,13 +110,53 @@ primer_barco_4_1 = Barcos('Primer barco 4x1', 4)
 segundo_barco_4_1 = Barcos('Segundo barco 4x1', 4)
 primer_barco_5_1 = Barcos('Primer barco 5x1', 5)
 lista_barcos = [primer_barco_2_1, segundo_barco_2_1, tercer_barco_2_1, cuarto_barco_2_1, primer_barco_3_1, segundo_barco_3_1, tercer_barco_3_1, primer_barco_4_1, segundo_barco_4_1, primer_barco_5_1]
+
 empiece_partida()
 dict_posiciones = {barco.nombre : barco.posicion for barco in lista_barcos}
-with open('posiciones.json', 'w+') as pos:
-    json.dump(dict_posiciones, pos, indent=4)
-#mesa_de_juego.mostrar_pantalla()
-#count = 0
-#while count < 5:
-#    preguntar(mesa_de_juego, dict_posiciones)
-#    count += 1
+#with open('posiciones.json', mode='w+') as pos:
+#    datos_enemigo = json.dump(dict_posiciones, pos, indent=4)
 
+with open('posiciones.json', mode='r+') as pos:
+    datos_enemigo = json.load(pos)
+
+lista_barcos_enemigos = []
+for k, v in datos_enemigo.items():
+    k = Barcos(k, len(v))
+    for posicion in v:
+        k.posicion.append(posicion)
+    lista_barcos_enemigos.append(k)
+
+
+
+empieza_jose, empieza_adria = quien_empieza()
+while empieza_jose == empieza_adria:
+    empieza_jose, empieza_adria = quien_empieza()
+
+os.system('clear')
+print(np.concatenate((mesa_de_juego.tabla, separador, tablero_diana.tabla), axis=1))
+while empieza_jose > empieza_adria:
+    lista_vida_barcos = [barco.muerte for barco in lista_barcos]
+    lista_vida_barcos_enemigos = [barco.muerte for barco in lista_barcos_enemigos]
+    if all(lista_vida_barcos) or all(lista_vida_barcos_enemigos):
+        if all(lista_vida_barcos):
+            print('Has perdido')
+            b
+        else:
+            print('Has ganado')
+        break
+    ataque(mesa_de_juego, lista_barcos)
+    defensa(tablero_diana, lista_barcos_enemigos)
+
+while empieza_jose < empieza_adria:
+    lista_vida_barcos = [barco.muerte for barco in lista_barcos]
+    lista_vida_barcos_enemigos = [barco.muerte for barco in lista_barcos_enemigos]
+    if all(lista_vida_barcos) or all(lista_vida_barcos_enemigos):
+        if all(lista_vida_barcos):
+            print('Has perdido')
+        else:
+            print('Has ganado')
+        break
+    defensa(tablero_diana, lista_barcos_enemigos)
+    ataque(mesa_de_juego, lista_barcos)
+    
+print('Partida terminada')
