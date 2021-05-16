@@ -4,13 +4,11 @@ class Barcos:
         
         self.nombre = nombre
         self.largo = largo
-        self.orientacion = None
         self.posicion = []
         self.muerte = False
 
 
     def colocar_barco(self, coordenada_y, coordenada_x, Tabler, orientacion):
-        diccionario_orientaciones = {'Norte' :0, 'Sur' :1, 'Este': 2, 'Oeste':3}
         while True:
 
             x_inicial = coordenada_x
@@ -37,7 +35,4 @@ class Barcos:
             break
 
         print(f'Añadido barco de eslora 4 en la posicion inicial {(y_inicial, x_inicial)} con orientacion {orientacion}')
-        print(Tabler.tabla)     
-    
-    def establecer_orientacion(self, orientacion):
-        self.orientacion = orientacion
+        print(Tabler.tabla)
