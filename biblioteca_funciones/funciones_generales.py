@@ -4,7 +4,8 @@ def limpiar_terminal():
     '''
     Esta función limpia la terminal de cualquier informacion aterior
     No recibe argumentos
-    Retorna None.SOLO LINUX'''
+    Retorna None.     
+    SOLO LINUX'''
 
     os.system('clear')
 
