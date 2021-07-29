@@ -25,7 +25,8 @@ while True:
 
     try:
 
-        lista_comandos = ['Acceder invitado', 'Parque', 'Discapacidad', 'Física', 'Buscar', 'Primer resultado']
+        lista_comandos = ['Acceder invitado', 'Parque', 'Discapacidad', 'Física', 
+        'Grado', 'Mayor', 'Buscar', 'Primer resultado']
         '''
         if text.lower()[:6] == 'ir web':
             driver = webdriver.Chrome(ruta_driver)
@@ -44,6 +45,12 @@ while True:
 
         if text == "física".lower():
             driver.find_element_by_xpath('//*[@id="motora"]').click()
+
+        if text == "Grado".lower():
+            driver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[4]/select[2]').click()
+
+        if text == "Mayor".lower():
+            driver.find_element_by_xpath('/html/body/div/div/div[2]/div/div[4]/select[2]/option[4]').click()
 
         if text == "Buscar".lower():
             driver.find_element_by_xpath('/html/body/div/div/div[2]/div/button/img').click()
